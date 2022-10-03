@@ -41,7 +41,8 @@ lst_symbols_trades = list(dict.fromkeys(lst_symbols_trades))
 
 ds = data_preparation.DataDescription(lst_pair_symbols)
 start_date = df_trades['timestamp'][0]
-start_date = start_date.strftime("%Y-%d-%m")
+start_date = start_date.strftime("%Y-%m-%d")
+# start_date = start_date.strftime("%Y-%d-%m")
 # start_date = '2020-01-01'
 
 lst_data = data_preparation.record(ds, config.DIR_DATA, start_date, config.INTERVAL)
