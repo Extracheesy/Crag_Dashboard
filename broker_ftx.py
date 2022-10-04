@@ -81,7 +81,7 @@ class BrokerFTX():
             except BaseException as err:
                 print("[BrokerFTX::get_balance] An error occured : {}".format(err))
         return result, balance
-    
+
     @authentication_required
     def get_portfolio_value(self):
         result, balance = self.get_balance()

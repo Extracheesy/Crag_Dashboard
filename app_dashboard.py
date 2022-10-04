@@ -102,6 +102,8 @@ app.layout = html.Div(id='parent', children=[
                  value=lst_symbols_trades[0]),
     dcc.Graph(id="graph_trades"),
 
+    dcc.Graph(id="graph_trades_2"),
+
     html.H1(id='H8', children='Positions',
             style={'textAlign': 'center', 'marginTop': 40, 'marginBottom': 40}),
     dash_table.DataTable(id='table_positions',
@@ -177,7 +179,27 @@ def display_buy_and_sell(value):
     df = df_buy_and_sell.copy()
     if(value != 'no_filter'):
         df.drop(df[df['symbol'] != value].index, inplace=True)
-    fig = px.bar(df, y="buy_sell")
+
+    # df.set_index('timestamp', inplace=True)
+    fig = px.bar(df, y="buy_sell", text="price")
+
+    fig.update_layout(
+        xaxis_rangeslider_visible='slider' in value
+    )
+    return fig
+
+@app.callback(
+    Output("graph_trades_2", "figure"),
+    Input("dropdown_trades", "value"))
+def display_buy_and_sell(value):
+    df = df_buy_and_sell.copy()
+    if(value != 'no_filter'):
+        df.drop(df[df['symbol'] != value].index, inplace=True)
+    # df['timestamp'] = df['timestamp'].apply(lambda x: x.replace(microsecond=0))
+    # df['timestamp'] = df['timestamp'].apply(lambda x: x.replace(second=0))
+
+    fig = px.scatter(df, x="timestamp", y="price", text='price')
+    # fig = go.Figure([go.Scatter(x=df['timestamp'], y=df['price'])])
     fig.update_layout(
         xaxis_rangeslider_visible='slider' in value
     )

@@ -21,6 +21,7 @@ def fetch_df_mytrades():
     my_broker = broker_ftx.BrokerFTX()
     result = my_broker.get_mytrades(milliseconds)
     # result = my_broker.fetch_my_trades(symbol=None, since=milliseconds, limit=200, params={})
+
     return result
 
 def fetch_df_positions():

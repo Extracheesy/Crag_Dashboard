@@ -129,6 +129,7 @@ def get_df_buy_and_sell(df):
     df_buy_n_sell['symbol'] = df['symbol']
     df_buy_n_sell['side'] = df['side']
     df_buy_n_sell['cost'] = df['cost']
+    df_buy_n_sell['price'] = df['price']
     df_buy_n_sell['amount'] = df['amount']
     df_buy_n_sell['fee_cost'] = df['fee_cost']
 
