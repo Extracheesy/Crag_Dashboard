@@ -198,7 +198,12 @@ def display_buy_and_sell(value):
     # df['timestamp'] = df['timestamp'].apply(lambda x: x.replace(microsecond=0))
     # df['timestamp'] = df['timestamp'].apply(lambda x: x.replace(second=0))
 
-    fig = px.scatter(df, x="timestamp", y="price", text='price')
+    # fig = px.scatter(df, x="timestamp", y="price", text='price')
+
+    df['buy+'] = df['buy'] * (-1)
+
+    fig = px.scatter(df, x="timestamp", y=["buy+", "sell"], text='price')
+
     # fig = go.Figure([go.Scatter(x=df['timestamp'], y=df['price'])])
     fig.update_layout(
         xaxis_rangeslider_visible='slider' in value

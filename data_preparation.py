@@ -140,13 +140,13 @@ def get_df_buy_and_sell(df):
 
     df_buy_n_sell.loc[(df_buy_n_sell.side == 'buy'), 'sell'] = 0
     df_buy_n_sell.loc[(df_buy_n_sell.side == 'sell'), 'buy'] = 0
-    df_buy_n_sell['sell'] = df_buy_n_sell['sell'] * (-1)
+    df_buy_n_sell['buy'] = df_buy_n_sell['buy'] * (-1)
     df_buy_n_sell['buy_sell'] = 0
     df_buy_n_sell['buy_sell'] = np.where((df_buy_n_sell['buy'] != 0), df_buy_n_sell['buy'], df_buy_n_sell['buy_sell'])
     df_buy_n_sell['buy_sell'] = np.where((df_buy_n_sell['sell'] != 0), df_buy_n_sell['sell'], df_buy_n_sell['buy_sell'])
 
     df_buy_n_sell.loc[(df_buy_n_sell.side == 'buy'), 'sell_size'] = 0
     df_buy_n_sell.loc[(df_buy_n_sell.side == 'sell'), 'buy_size'] = 0
-    df_buy_n_sell['sell_size'] = df_buy_n_sell['sell_size'] * (-1)
+    df_buy_n_sell['buy_size'] = df_buy_n_sell['buy_size'] * (-1)
 
     return df_buy_n_sell
