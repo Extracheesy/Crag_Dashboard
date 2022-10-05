@@ -6,6 +6,7 @@ from dash import dash_table
 import plotly.express as px
 from dash.dependencies import Input, Output
 from datetime import datetime
+from datetime import datetime as dt
 import data_preparation
 import config
 import utils
@@ -34,7 +35,7 @@ str_cash_usd_value = 'Account available cash: $'+str(round(account_usd_cash, 2))
 str_portfolio_value = 'Account portfolio assets engaged: $'+str(round(account_usd_portfolio, 2))
 
 df_buy_and_sell = data_preparation.get_df_buy_and_sell(df_trades)
-lst_symbols_trades = ['no_filter']
+lst_symbols_trades = []
 for symbol in df_buy_and_sell['symbol'].tolist():
     lst_symbols_trades.append(symbol)
 lst_symbols_trades = list(dict.fromkeys(lst_symbols_trades))
@@ -42,10 +43,10 @@ lst_symbols_trades = list(dict.fromkeys(lst_symbols_trades))
 ds = data_preparation.DataDescription(lst_pair_symbols)
 start_date = df_trades['timestamp'][0]
 start_date = start_date.strftime("%Y-%m-%d")
-# start_date = start_date.strftime("%Y-%d-%m")
-# start_date = '2020-01-01'
+now = dt.now()
+end_date = now.strftime("%Y-%m-%d")
 
-lst_data = data_preparation.record(ds, config.DIR_DATA, start_date, config.INTERVAL)
+lst_data = data_preparation.record(ds, config.DIR_DATA, start_date, end_date,config.INTERVAL)
 ds = data_preparation.lst_to_df(lst_data, ds)
 
 lst_options = []
@@ -99,7 +100,11 @@ app.layout = html.Div(id='parent', children=[
 
     dcc.Dropdown(id='dropdown_trades',
                  options=lst_symbols_trades,
-                 value=lst_symbols_trades[0]),
+                 value='BTC/USD'),
+                 # value=lst_symbols_trades[0]),
+
+    dcc.Graph(id="graph_test"),
+
     dcc.Graph(id="graph_trades"),
 
     dcc.Graph(id="graph_trades_2"),
@@ -127,6 +132,7 @@ def display_candlestick(value):
     fig.update_layout(
         xaxis_rangeslider_visible='slider' in value
     )
+    fig.update_xaxes(minor=dict(ticks="inside", showgrid=True))
     return fig
 
 @app.callback(
@@ -186,6 +192,7 @@ def display_buy_and_sell(value):
     fig.update_layout(
         xaxis_rangeslider_visible='slider' in value
     )
+    fig.update_xaxes(minor=dict(ticks="inside", showgrid=True))
     return fig
 
 @app.callback(
@@ -198,16 +205,45 @@ def display_buy_and_sell(value):
     # df['timestamp'] = df['timestamp'].apply(lambda x: x.replace(microsecond=0))
     # df['timestamp'] = df['timestamp'].apply(lambda x: x.replace(second=0))
 
-    # fig = px.scatter(df, x="timestamp", y="price", text='price')
-
     df['buy+'] = df['buy'] * (-1)
 
     fig = px.scatter(df, x="timestamp", y=["buy+", "sell"], text='price')
-
     # fig = go.Figure([go.Scatter(x=df['timestamp'], y=df['price'])])
+
+    fig.update_xaxes(minor=dict(ticks="inside", showgrid=True))
+
     fig.update_layout(
         xaxis_rangeslider_visible='slider' in value
     )
+    return fig
+
+@app.callback(
+    Output("graph_test", "figure"),
+    Input("dropdown_trades", "value"))
+def display_candlestick_and_trades(value):
+    position = ds.symbols.index(value)
+    df = ds.lst_data[position]
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Candlestick(
+        x=df['date'],
+        open=df['open'],
+        high=df['high'],
+        low=df['low'],
+        close=df['close']
+    ))
+
+    df_2 = df_buy_and_sell.copy()
+    df_2.drop(df_2[df_2['symbol'] != value].index, inplace=True)
+
+    fig.add_trace(go.Scatter(x=df_2['timestamp'], y=df_2['buy_price'], mode="markers+text", text=df_2['price'], textposition="bottom center"))
+    fig.add_trace(go.Scatter(x=df_2['timestamp'], y=df_2['sell_price'], mode="markers+text", text=df_2['price'], textposition="bottom center"))
+
+    fig.update_layout(
+        xaxis_rangeslider_visible='slider' in value
+    )
+    fig.update_xaxes(minor=dict(ticks="inside", showgrid=True))
     return fig
 
 if __name__ == '__main__':

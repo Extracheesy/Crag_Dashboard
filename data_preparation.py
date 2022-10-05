@@ -42,10 +42,10 @@ def get_current_data(data_description):
     return df_result
 
 
-def record(data_description, target="./data/", start_date="2022-06-01", interval="1h"):
+def record(data_description, target="./data/", start_date="2022-06-01", end_date="2022-10-01",interval="1h"):
     symbols = ','.join(data_description.symbols)
     symbols = symbols.replace('/','_')
-    params = { "service":"history", "exchange":"ftx", "symbol":symbols, "start":start_date, "interval": interval }
+    params = { "service":"history", "exchange":"ftx", "symbol":symbols, "start":start_date, "end":end_date,"interval": interval }
     response_json = utils.fdp_request(params)
     lst_df_data = []
     for symbol in data_description.symbols:
@@ -148,5 +148,10 @@ def get_df_buy_and_sell(df):
     df_buy_n_sell.loc[(df_buy_n_sell.side == 'buy'), 'sell_size'] = 0
     df_buy_n_sell.loc[(df_buy_n_sell.side == 'sell'), 'buy_size'] = 0
     df_buy_n_sell['buy_size'] = df_buy_n_sell['buy_size'] * (-1)
+
+    df_buy_n_sell['sell_price'] = df_buy_n_sell['price']
+    df_buy_n_sell['buy_price'] = df_buy_n_sell['price']
+    df_buy_n_sell.loc[(df_buy_n_sell.side == 'buy'), 'sell_price'] = ''
+    df_buy_n_sell.loc[(df_buy_n_sell.side == 'sell'), 'buy_price'] = ''
 
     return df_buy_n_sell
