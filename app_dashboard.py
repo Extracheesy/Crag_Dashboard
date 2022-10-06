@@ -237,8 +237,10 @@ def display_candlestick_and_trades(value):
     df_2 = df_buy_and_sell.copy()
     df_2.drop(df_2[df_2['symbol'] != value].index, inplace=True)
 
-    fig.add_trace(go.Scatter(x=df_2['timestamp'], y=df_2['buy_price'], mode="markers+text", text=df_2['price'], textposition="bottom center"))
-    fig.add_trace(go.Scatter(x=df_2['timestamp'], y=df_2['sell_price'], mode="markers+text", text=df_2['price'], textposition="bottom center"))
+    fig.add_trace(go.Scatter(x=df_2['timestamp'], y=df_2['buy_price'], mode="markers+text", text=df_2['price'], textposition="bottom center",
+                             marker_line_color = "midnightblue", marker_color = "lightskyblue", marker_line_width = 2, marker_size = 15))
+    fig.add_trace(go.Scatter(x=df_2['timestamp'], y=df_2['sell_price'], mode="markers+text", text=df_2['price'], textposition="bottom center",
+                             marker_line_color = "black", marker_color = "red", marker_line_width = 2, marker_size = 15))
 
     fig.update_layout(
         xaxis_rangeslider_visible='slider' in value
